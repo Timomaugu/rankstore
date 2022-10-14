@@ -35,11 +35,15 @@
         background-color: #F9F7F7 !important;
         border: none;
     }
+    #exp-text {
+        margin: 20px 35px;
+        color: red;
+    }
 </style>
 
 <body>
     <div class="flex p-2 px-3 mb-2 bg-green-900 justify-between">
-        <p class="text-white font-bold">MAUGU VFL PREDICTOR</p>
+        <p class="text-white font-bold">VFL PREDICTOR</p>
         <div class="flex">
             <span class="font-bold text-white">LOGIN </span>
             <p class="text-white" id="login"></p>
@@ -110,6 +114,7 @@
     <div class="container-fluid">
         <div class="ml-6 font-bold text-danger text-sm" id="unpredictable"></div>
     </div>
+    <div id="exp-text">Results = Average for a simulation of 1000 matches by the teams.</div>
     <script src="js/mainleague.js"></script>
 </body>
 
