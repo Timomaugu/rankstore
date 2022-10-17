@@ -116,6 +116,9 @@
     </div>
     <div id="exp-text">Results = Average for a simulation of 1000 matches by the teams.</div>
     <script src="js/mainleague.js"></script>
+    <!-- SHOW ADSENSE ADS -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2356670002081614"
+     crossorigin="anonymous"></script>
 </body>
 
 </html>
