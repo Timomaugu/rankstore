@@ -362,7 +362,6 @@ function match() {
         } else {
             probability.style.color = "orange"
         }
-        document.getElementById("exp-text").innerHTML = "";
     }
     home_wins = 0;
     away_wins = 0;

@@ -35,10 +35,6 @@
         background-color: #F9F7F7 !important;
         border: none;
     }
-    #exp-text {
-        margin: 20px 35px;
-        color: red;
-    }
 </style>
 
 <body>
@@ -116,7 +112,6 @@
     <div class="container-fluid">
         <div class="ml-6 font-bold text-danger text-sm" id="unpredictable"></div>
     </div>
-    <div id="exp-text">Results = Average for a simulation of 1000 matches by the teams.</div>
     <script src="js/mainleague.js"></script>
     
 </body>
