@@ -1,10 +1,11 @@
-var league = ["Away", "Home"];
 
 //fixture
 var process = null
 var teamAOdds = 0;
 var teamBOdds = 0;
 var strongerTeam = 13;
+
+var teams = {}
 
 //Process Form Inputs
 function process_result() {
@@ -17,32 +18,26 @@ function process_result() {
 
     } else {
         teamBSkills = strongerTeam;
-        teamASkills = (teamBSkills * teamBOdds / teamAOdds) - 11;
+        teamASkills = (teamBSkills * teamBOdds / teamAOdds) - 2;
     }
     teams = {
         "Home": {
-            "played": 0,
-            "points": 0,
             "goals": 0,
             "skills": Math.round(teamASkills),
             "won": 0,
-            "loss": 0,
             "draw": 0,
         },
         "Away": {
-            "played": 0,
-            "points": 0,
             "goals": 0,
             "skills": Math.round(teamBSkills),
             "won": 0,
-            "loss": 0,
             "draw": 0,
         }
 
     }
 }
 //show if a button had already being clicked
-var teams = {}
+
 var message = document.getElementById("error_msg");
 var err = document.getElementById("alert");
 var close_button = document.getElementById("btn-close")
@@ -62,7 +57,7 @@ predict_button.onclick = function() {
     teamBOdds = away_input.value;
     err.style.display = "none";
     clearInterval(process);
-    isDone = false
+    matchesCompleted = false
 
     if (teamAOdds < 1 || teamAOdds == "") {
         message.innerHTML = " Home Team Odds Empty"
@@ -72,7 +67,6 @@ predict_button.onclick = function() {
         err.style.display = "block"
     } else {
         process_result()
-        making_fixtures()
         rendering_odds()
         process = setInterval(game_interval, 1);
     }
@@ -89,57 +83,21 @@ away_input.oninput = function() {
         away_input.value = away_input.value / 10
     }
 }
+//EDIT STARTED
 
-var first_leg = []
-var second_leg = []
-var temp_leg = []
-
-function making_fixtures() {
-    for (let j = 0; j < (league.length - 1); j++) {
-        for (let i = 0; i < (league.length / 2); i++) {
-            temp_leg.push(league[i])
-            temp_leg.push(league[league.length - 1 - i])
-            first_leg.push([league[i], league[league.length - 1 - i]])
-            second_leg.push([league[league.length - 1 - i], league[i]])
-        }
-
-        league = temp_leg.splice(0, temp_leg.length)
-
-    }
-}
-
-var week_no = 1
-var first_leg_bool = false
-var week_match = []
-
-function fixtures() {
-
-    week_match = []
-    for (let i = 0; i < 1; i++) {
-        // alert((10 * week_no) + i)
-        week_match.push(first_leg[(0 * week_no) + i])
-    }
-
-    week_match = []
-    for (let i = 0; i < 1; i++) {
-        week_match.push(second_leg[(0 * week_no) + i])
-    }
-
-    week_no++
-}
 
 let odds_array = []
 
 function odds_making_algo() {
-    fixtures()
+    
     odds_array = []
-
-    for (let i = 0; i < week_match.length; i++) {
-        let home_name = week_match[i][0]
-        let away_name = week_match[i][1]
+        
+        let home_name = "Home"
+        let away_name = "Away"
         let match_name = `${home_name} - ${away_name}`
-        let home_chance = teams[week_match[i][0]]["skills"]
-        let away_chance = teams[week_match[i][1]]["skills"]
+
+        let home_chance = teams.Home.skills
+        let away_chance = teams.Away.skills
         let stronger_team = Math.max(home_chance, away_chance)
         let weaker_team = Math.min(home_chance, away_chance)
             // console.log("Home: " + home_chance + " away: " + away_chance)
@@ -148,8 +106,9 @@ function odds_making_algo() {
         let home_odds = [1 + (away_chance / home_chance), "home", `${home_name}, ${away_name}`]
         let away_odds = [1 + (home_chance / away_chance), "away", `${home_name}, ${away_name}`]
         let draw_odds = [1.5 + (stronger_team / weaker_team), "draw", `${home_name}, ${away_name}`]
+        
         odds_array.push([match_name, home_odds, draw_odds, away_odds])
-    }
+    
 }
 
 // odds_making_algo()
@@ -193,23 +152,6 @@ function rendering_odds() {
         draw_button.style.textAlign = "center"
         away_button.style.textAlign = "center"
 
-        home_button.style.cursor = "pointer"
-        draw_button.style.cursor = "pointer"
-        away_button.style.cursor = "pointer"
-
-        home_button.setAttribute('bet_type', `${odds_array[i][1][1]}`)
-        draw_button.setAttribute('bet_type', `${odds_array[i][2][1]}`)
-        away_button.setAttribute('bet_type', `${odds_array[i][3][1]}`)
-
-
-        home_button.setAttribute('teams', `${odds_array[i][1][2]}`)
-        draw_button.setAttribute('teams', `${odds_array[i][2][2]}`)
-        away_button.setAttribute('teams', `${odds_array[i][3][2]}`)
-
-        home_button.setAttribute('class', "each_odd")
-        draw_button.setAttribute('class', "each_odd")
-        away_button.setAttribute('class', "each_odd")
-
         each_row.append(matchName)
         each_row.append(home_button)
         each_row.append(draw_button)
@@ -219,13 +161,13 @@ function rendering_odds() {
 }
 
 var counter = 0
-var isDone = false;
+var matchesCompleted = false;
 
 // Fetch average game results 
 function game_interval() {
     counter++
     if (counter > 999) {
-        isDone = true;
+        matchesCompleted = true;
         clearInterval(process);
     }
     match()
@@ -241,50 +183,52 @@ var results = [];
 
 function match() {
 
-    for (let i = 0; i < week_match.length; i++) {
-        teamA = week_match[i][0]
-        teamB = week_match[i][1]
-        team1 = 0;
-        team2 = 0;
-        goal = [team1, team2]
-        while (k < 6) {
-            var opportunity = Math.floor(Math.random() * 2);
-            var players = week_match[i][opportunity]
-                //console.log(players)
-                // console.log(opportunity)
-            var score = Math.floor(Math.random() * 18);
-            if (teams[players]["skills"] >= score) {
-                goal[opportunity]++
-            }
-            k++
+    teamA = teams.Home
+    teamB = teams.Away
+    myteams = [teamA, teamB]
+    team1 = 0;
+    team2 = 0;
+    goal = [team1, team2]
+
+    while (k < 6) {
+        var opportunity = Math.floor(Math.random() * 2);
+            //console.log(players)
+            // console.log(opportunity)
+        var score = Math.floor(Math.random() * 18);
+        if (myteams[opportunity].skills >= score) {
+            goal[opportunity]++
         }
-        teams[week_match[i][0]]["goals"] += goal[0]
-        teams[week_match[i][1]]["goals"] += goal[1]
-        if (goal[0] === goal[1]) {
-            teams[week_match[i][0]]["draw"]++;
-            teams[week_match[i][1]]["draw"]++;
-        } else if (goal[0] > goal[1]) {
-            teams[week_match[i][0]]["won"]++;
-        } else {
-            teams[week_match[i][1]]["won"]++;
-        }
-        resultArray.push(goal[0], goal[1]);
-        results.push(resultArray)
-        k = 0
+        k++
     }
 
-    if (isDone) {
-        var most_freq = mostFrequent(results);
+    teams.Home.goals += goal[0]
+    teams.Away.goals += goal[1]
+    if (goal[0] === goal[1]) {
+        teams.Home.draw++;
+        teams.Away.draw++;
+    } else if (goal[0] > goal[1]) {
+        teams.Home.won++;
+    } else {
+        teams.Away.won++;
+    }
+    resultArray.push(goal[0], goal[1]);
+    results.push(resultArray)
+    
+    k = 0
+    
 
+    if (matchesCompleted) {
+        var most_freq = mostFrequent(results);
+        
         div.style.display = "block"
         while (resultsTable.rows.length > 1) {
             resultsTable.deleteRow(1);
         }
         tough.innerHTML = "";
 
-        var home_wins = teams[teamA]["won"];
-        var away_wins = teams[teamB]["won"];
-        var draws = teams[teamB]["draw"];
+        var home_wins = teams.Home.won;
+        var away_wins = teams.Away.won;
+        var draws = teams.Home.draw;
 
         var scores = document.createElement("td");
         var prediction = document.createElement("td");
