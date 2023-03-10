@@ -1,35 +1,42 @@
 
 //fixture
 var process = null
-var teamAOdds = 0;
-var teamBOdds = 0;
-var strongerTeam = 13;
+var home_chance = 0;
+var away_chance = 0;
+var max_skills = 13;
 
 var teams = {}
 
-//Process Form Inputs
+//process odds inputs
 function process_result() {
-    let teamASkills = 0;
-    let teamBSkills = 0;
 
-    if (teamAOdds <= teamBOdds) {
-        teamASkills = strongerTeam;
-        teamBSkills = teamASkills * teamAOdds / teamBOdds;
+    let stronger_team = Math.min(home_chance, away_chance);
+    let weaker_team = Math.max(home_chance, away_chance);
+
+    let home_skills = 0;
+    let away_skills = 0;
+
+    if (stronger_team == home_chance) {
+        home_skills = max_skills;
+        away_skills = home_skills * stronger_team / weaker_team;
 
     } else {
-        teamBSkills = strongerTeam;
-        teamASkills = (teamBSkills * teamBOdds / teamAOdds) - 2;
+        away_skills = max_skills;
+        home_skills = (away_skills * stronger_team / weaker_team)-1;
     }
+    
     teams = {
         "Home": {
+            "name": "Home",
             "goals": 0,
-            "skills": Math.round(teamASkills),
+            "skills": home_skills,
             "won": 0,
             "draw": 0,
         },
         "Away": {
+            "name": "Away",
             "goals": 0,
-            "skills": Math.round(teamBSkills),
+            "skills": away_skills,
             "won": 0,
             "draw": 0,
         }
@@ -40,11 +47,11 @@ function process_result() {
 
 var message = document.getElementById("error_msg");
 var err = document.getElementById("alert");
-var close_button = document.getElementById("btn-close")
-var home_input = document.getElementById('home-odd')
-var away_input = document.getElementById("away-odd")
+var close_button = document.getElementById("btn-close");
+var home_input = document.getElementById('home-odd');
+var away_input = document.getElementById("away-odd");
 
-let predict_button = document.getElementById("predButton")
+let predict_button = document.getElementById("predButton");
 
 close_button.onclick = function() {
     err.style.display = "none"
@@ -53,16 +60,16 @@ close_button.onclick = function() {
 predict_button.onclick = function() {
     counter = 0;
     results = [];
-    teamAOdds = home_input.value;
-    teamBOdds = away_input.value;
+    home_chance = home_input.value;
+    away_chance = away_input.value;
     err.style.display = "none";
     clearInterval(process);
     matchesCompleted = false
 
-    if (teamAOdds < 1 || teamAOdds == "") {
+    if (home_chance < 1 || home_chance == "") {
         message.innerHTML = " Home Team Odds Empty"
         err.style.display = "block"
-    } else if (teamBOdds < 1 || teamBOdds == "") {
+    } else if (away_chance < 1 || away_chance == "") {
         message.innerHTML = " Away Team Odds Empty"
         err.style.display = "block"
     } else {
@@ -74,13 +81,13 @@ predict_button.onclick = function() {
 
 home_input.oninput = function() {
     if (home_input.value > 10) {
-        home_input.value = home_input.value / 10
+        home_input.value = home_input.value / 10;
     }
 }
 
 away_input.oninput = function() {
     if (away_input.value > 10) {
-        away_input.value = away_input.value / 10
+        away_input.value = away_input.value / 10;
     }
 }
 //EDIT STARTED
@@ -92,22 +99,13 @@ function odds_making_algo() {
     
     odds_array = []
         
-        let home_name = "Home"
-        let away_name = "Away"
-        let match_name = `${home_name} - ${away_name}`
-
-        let home_chance = teams.Home.skills
-        let away_chance = teams.Away.skills
-        let stronger_team = Math.max(home_chance, away_chance)
-        let weaker_team = Math.min(home_chance, away_chance)
+        let match_name = `${teams.Home.name} - ${teams.Away.name}`;
             // console.log("Home: " + home_chance + " away: " + away_chance)
-            // alert(weaker_team)
-            // console.log(stronger_team)
-        let home_odds = [1 + (away_chance / home_chance), "home", `${home_name}, ${away_name}`]
-        let away_odds = [1 + (home_chance / away_chance), "away", `${home_name}, ${away_name}`]
-        let draw_odds = [1.5 + (stronger_team / weaker_team), "draw", `${home_name}, ${away_name}`]
+        let home_odds = [home_chance, "home", `${teams.Home.name}, ${teams.Away.name}`];
+        let away_odds = [away_chance, "away", `${teams.Home.name}, ${teams.Away.name}`];
+        let draw_odds = [1/(1.0645 - (parseFloat(1/home_chance) + parseFloat(1/away_chance))), "draw", `${teams.Home.name}, ${teams.Away.name}`];
         
-        odds_array.push([match_name, home_odds, draw_odds, away_odds])
+        odds_array.push([match_name, home_odds, draw_odds, away_odds]);
     
 }
 
@@ -122,41 +120,41 @@ function rendering_odds() {
     for (let i = 0; i < odds_array.length; i++) {
         // var odd_render = document.getElementById("oddRender")
         //below match name is the render match name
-        var matchName = document.createElement("td")
-        var home_button = document.createElement("td")
-        var draw_button = document.createElement("td")
-        var away_button = document.createElement("td")
+        var matchName = document.createElement("td");
+        var home_button = document.createElement("td");
+        var draw_button = document.createElement("td");
+        var away_button = document.createElement("td");
             // var tb7= document.createElement("td")
             // var tb8 = document.createElement("td")
-        var each_row = document.createElement("tr")
-        matchName.innerHTML = odds_array[i][0]
-        home_button.innerHTML = odds_array[i][1][0].toFixed(2)
-        draw_button.innerHTML = odds_array[i][2][0].toFixed(2)
-        away_button.innerHTML = odds_array[i][3][0].toFixed(2)
+        var each_row = document.createElement("tr");
+        matchName.innerHTML = odds_array[i][0];
+        home_button.innerHTML = parseFloat(odds_array[i][1][0]).toFixed(2);
+        away_button.innerHTML = parseFloat(odds_array[i][3][0]).toFixed(2);
+        draw_button.innerHTML = odds_array[i][2][0].toFixed(2);
 
-        home_button.style.color = "white"
-        draw_button.style.color = "white"
-        away_button.style.color = "white"
+        home_button.style.color = "white";
+        draw_button.style.color = "white";
+        away_button.style.color = "white";
 
-        matchName.style.backgroundColor = "#F0FFF0"
-        home_button.style.backgroundColor = "#2F4F4F"
-        draw_button.style.backgroundColor = "#2F4F4F"
-        away_button.style.backgroundColor = "#2F4F4F"
+        matchName.style.backgroundColor = "#F0FFF0";
+        home_button.style.backgroundColor = "#2F4F4F";
+        draw_button.style.backgroundColor = "#2F4F4F";
+        away_button.style.backgroundColor = "#2F4F4F";
 
-        home_button.stylepadding = "5px"
-        draw_button.stylepadding = "5px"
-        away_button.stylepadding = "5px"
+        home_button.stylepadding = "5px";
+        draw_button.stylepadding = "5px";
+        away_button.stylepadding = "5px";
 
-        matchName.style.textAlign = "center"
-        home_button.style.textAlign = "center"
-        draw_button.style.textAlign = "center"
-        away_button.style.textAlign = "center"
+        matchName.style.textAlign = "center";
+        home_button.style.textAlign = "center";
+        draw_button.style.textAlign = "center";
+        away_button.style.textAlign = "center";
 
-        each_row.append(matchName)
-        each_row.append(home_button)
-        each_row.append(draw_button)
-        each_row.append(away_button)
-        oddshtml.append(each_row)
+        each_row.append(matchName);
+        each_row.append(home_button);
+        each_row.append(draw_button);
+        each_row.append(away_button);
+        oddshtml.append(each_row);
     }
 }
 
@@ -183,19 +181,17 @@ var results = [];
 
 function match() {
 
-    teamA = teams.Home
-    teamB = teams.Away
-    myteams = [teamA, teamB]
-    team1 = 0;
-    team2 = 0;
-    goal = [team1, team2]
+    my_teams = [teams.Home, teams.Away]
+    team_1 = 0;
+    team_2 = 0;
+    goal = [team_1, team_2]
 
     while (k < 6) {
         var opportunity = Math.floor(Math.random() * 2);
             //console.log(players)
             // console.log(opportunity)
         var score = Math.floor(Math.random() * 18);
-        if (myteams[opportunity].skills >= score) {
+        if (my_teams[opportunity].skills >= score) {
             goal[opportunity]++
         }
         k++
@@ -259,14 +255,14 @@ function match() {
         if (most_freq[0] > most_freq[1]) {
 
             scores.innerHTML = most_freq[0] + " - " + most_freq[1];
-            prediction.innerHTML = "Home";
+            prediction.innerHTML = teams.Home.name;
             probability.innerHTML = ((home_wins / (counter + 1.1)) * 100).toFixed(2) + "% ";
             //console.log(mostFrequent(results));
 
         } else if (most_freq[1] > most_freq[0]) {
 
             scores.innerHTML = most_freq[0] + " - " + most_freq[1];
-            prediction.innerHTML = "Away";
+            prediction.innerHTML = teams.Away.name;
             probability.innerHTML = ((away_wins / (counter + 1.1)) * 100).toFixed(2) + "% ";
             //console.log(mostFrequent(results));
 
