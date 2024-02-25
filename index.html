@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maugu VFL</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/tailwind.css">
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+</head>
+
+<style type="text/css">
+    .app-name {
+        font-weight: bold;
+        font-size: larger;
+        color: brown;
+        margin-top: 10px;
+    }
+    .app-desc {
+        margin: 10px 0px 10px 0px;
+    }
+    .col-md-3 {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    img {
+        margin: auto;
+    }
+    span {
+        font-size: 15px;
+        color: gray;
+    }
+    .carousel-control-next-icon,
+    .carousel-control-prev-icon {
+        background-color: rgb(197, 32, 32);
+    }
+</style>
+
+<body>
+
+    <div class="flex p-2 px-3 mb-2 bg-green-900 justify-between">
+        <p class="text-white font-bold">RANKSTORE APPS</p>
+        <div class="flex">
+            <span class="font-bold text-white">REVIEWS </span>
+            <p class="text-white" id="login"></p>
+        </div>
+    </div>
+
+    <!-- starts here -->
+    <div class="container mt-10">
+        <div class="row" id="content">
+
+        </div>
+    </div>
+
+    <script>
+        var row = document.getElementById('content');
+
+        const jsonArr = '[{"app_id": 1, "app_name": "AllSocial Media", "app_size" : "3MB", "app_desc": "All social media apps in one.", "app_icon": "allsocial.png", "app_url": "allsocial.apk", "images": ["a_1.png", "a_2.png", "a_3.png", "a_4.png", "a_5.png"]},'
+                        +'{ "app_id": 2, "app_name": "Soccer Live", "app_size" : "3MB", "app_desc": "Watch football game live.", "app_icon": "soccer_live.png", "app_url": "soccer-live.apk", "images": ["s_1.png", "s_2.png", "s_3.png", "s_4.png", "s_5.png", "s_6.png"]},'
+                        +'{ "app_id": 3, "app_name": "Cricket Live", "app_size" : "16MB", "app_desc": "Cricket matches live updates.", "app_icon": "cricket_live.png", "app_url": "cricket-live.apk", "images": ["fb.png", "yt.png"]},'
+                    +'{ "app_id": 4, "app_name": "Cash Bazu", "app_size" : "24MB", "app_desc": "Make money online.", "app_icon": "cash_bazu.png", "app_url": "cash-bazu.apk", "images": ["cb_1.png", "cb_2.png", "cb_3.png", "cb_4.png", "cb_5.png", "cb_6.png", "cb_7.png", "cb_8.png", "cb_9.png"]},'
+                    +'{ "app_id": 4, "app_name": "Torrentity", "app_size" : "4MB", "app_desc": "Download movies and torrents.", "app_icon": "torrentity.png", "app_url": "torrentity.apk", "images": ["t_2.png", "t_3.png", "t_4.png", "t_5.png", "t_6.png"]},'
+                    +'{ "app_id": 4, "app_name": "Holy Bible", "app_size" : "22MB", "app_desc": "Read six versions of Bible.", "app_icon": "bible.png", "app_url": "bible.apk", "images": ["b_1.png", "b_2.png", "b_3.png", "b_4.png", "b_5.png", "b_6.png", "b_7.png", "b_8.png", "b_9.png", "b_10.png", "b_11.png"]}]';
+
+        const arr = JSON.parse(jsonArr);
+        
+        for (let i = 0; i < arr.length; i++) {
+            
+            row.innerHTML += '<div class="col-md-3 mt-4">'
+                +'<img src="img/icons/'+arr[i].app_icon+'" height="150" width="150" />'
+                +'<h4 class="app-name">'+arr[i].app_name+'<span>&nbsp;('+arr[i].app_size+')</span></h4>'
+                +'<p class="app-desc">'+arr[i].app_desc+'</p>'
+                +'<a href="#" class="btn btn-sm btn-secondary" type="button" data-toggle="modal" data-target="#modal_'+i+'">Preview</a>'
+                +'<a href="app/'+arr[i].app_url+'" class="btn btn-sm btn-success ml-1" type="button">Download</a>'
+            +'</div>';
+
+
+            row.innerHTML += '<div class="modal" id="modal_'+i+'">'
+                +'<div class="modal-dialog">'
+                    +'<div class="modal-content">'
+                        
+                        +'<div class="modal-header">'
+                            +'<h4 class="modal-title">Screenshots</h4>'
+                            +'<button type="button" class="close" data-dismiss="modal">&times;</button>'
+                        +'</div>'
+        
+                        
+                        +'<div class="modal-body">'
+
+                        +'<div class="container" id = "screenshots_'+i+'">'
+                            
+                            var previews = document.getElementById('screenshots_'+i);
+                            for (let x = 0; x < arr[i].images.length; x++) {
+                                previews.innerHTML += '<img class="mySlides'+i+'" src="img/screenshots/'+arr[i].images[x]+'" style="width:100%">'
+                                +'<a class="carousel-control-prev" onclick="plusDivs('+i+',-1)"><span class="carousel-control-prev-icon"></span></a>'
+                                +'<a class="carousel-control-next" onclick="plusDivs('+i+',1)"><span class="carousel-control-next-icon"></span></a>'
+                            } 
+                            
+                        +'</div>'
+                        +'</div>'
+                    +'</div>'
+                +'</div>'
+            +'</div>';
+        }
+
+        var slideIndex = 1;
+        for (let p = 0; p < arr.length; p++) {
+            showDivs(p, slideIndex);
+            
+        }
+        
+        function plusDivs(a,n) {
+            showDivs(a, slideIndex += n);
+        }
+        
+        function showDivs(a,n) {
+            var x = document.getElementsByClassName("mySlides"+a);
+            
+            if (n > x.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = x.length}
+            for (let k = 0; k < x.length; k++) {
+            x[k].style.display = "none"; 
+            console.log(x[k]) 
+            }
+            x[slideIndex-1].style.display = "block";  
+        }
+    </script>
+    
+</body>
+
+</html>
